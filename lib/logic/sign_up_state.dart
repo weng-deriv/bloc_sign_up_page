@@ -22,26 +22,9 @@ class SignUpCredentialsEmpty extends SignUpState {
   String get passwordConfirm => _passwordConfirm;
 }
 
-class SignUpCredentialsUsernameEmpty extends SignUpState {
-  // final String _username;
-  //
-  // SignUpCredentialsUsernameEmpty(this._username);
-  //
-  // String get username => _username;
+class SignUpCredentialsUsernameEmpty extends SignUpState {}
 
-}
-
-class SignUpCredentialsNotEmpty extends SignUpState {
-  // SignUpCredentialsNotEmpty(this._username, this._password, this._passwordConfirm);
-  //
-  // final String _username;
-  // final String _password;
-  // final String _passwordConfirm;
-  //
-  // String get username => _username;
-  // String get password => _password;
-  // String get passwordConfirm => _passwordConfirm;
-}
+class SignUpCredentialsNotEmpty extends SignUpState {}
 
 class SignUpPasswordsNotMatched extends SignUpState {}
 
@@ -49,13 +32,13 @@ class SignUpPasswordsMatched extends SignUpState {}
 
 class SignUpUsernameExceedMinMaxCharacters extends SignUpState {}
 
-class SignUpUsernameContainsSpecialCharacters extends SignUpState{}
+class SignUpUsernameContainsSpecialCharacters extends SignUpState {}
 
 class SignUpPasswordExceedMinMaxCharacters extends SignUpState {}
 
-class SignUpPasswordAtLeastContainsOneSpecialCharacters extends SignUpState{}
+class SignUpPasswordAtLeastContainsOneSpecialCharacters extends SignUpState {}
 
-class SignUpPasswordValid extends SignUpState{}
+class SignUpPasswordValid extends SignUpState {}
 
 class SignUpUsernameValid extends SignUpState {}
 

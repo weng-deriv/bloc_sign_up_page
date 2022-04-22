@@ -8,8 +8,7 @@ part 'sign_up_state.dart';
 
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   SignUpBloc() : super(SignUpInitial()) {
-    // on<SignUpCredentialsEnteredEvent>(_signUpCredentialsEntered);
-    // on<SignUpCredentialsNotEnteredEvent>(_signUpCredentialsNotEntered);
+
     on<SignUpCredentialsUsernameNotEnteredEvent>(
         _signUpCredentialsUsernameNotEntered);
     on<SignUpCredentialsPasswordNotEnteredEvent>(
@@ -42,13 +41,6 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   void _signUpCredentialsCheckEnteredUsername(
       SignUpCredentialsCheckEnteredUsernameEvent event,
       Emitter<SignUpState> emit) {
-    // // if(event.username.lengt{
-    // //   print('derivvvvvvvv');
-    // // }
-    // // print(event.username.length);
-    // if (event.username.isEmpty) {
-    //   emit(SignUpCredentialsUsernameEmpty());
-    // }
     if (event.username.length <= 2 || event.username.length > 8) {
       emit(SignUpUsernameExceedMinMaxCharacters());
     } else if (regExp.hasMatch(event.username)) {

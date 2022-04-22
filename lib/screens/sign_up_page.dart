@@ -16,7 +16,6 @@ class _SignUpPageState extends State<SignUpPage> {
   final _username = TextEditingController();
   final _password = TextEditingController();
   final _confirmPassword = TextEditingController();
-  bool _isButtonDisabled = true;
   late final SignUpBloc _signUpBloc;
 
   @override
@@ -127,9 +126,7 @@ class _SignUpPageState extends State<SignUpPage> {
               _signUpBloc.add(
                   SignUpCredentialsCheckEnteredUsernameEvent(_username.text));
             }
-            // if (state is SignUpUsernameIsNotEntered) {
-            //   _signUpBloc.add(SignUpCredentialsUsernameNotEnteredEvent());
-            // }
+
             if (state is SignUpPasswordIsEntered) {
               _signUpBloc.add(
                   SignUpCredentialsCheckedEnteredPasswordEvent(_password.text));
@@ -140,9 +137,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   SignUpCredentialsCheckedEnteredConfirmPasswordEvent(
                       _confirmPassword.text, _password.text));
             }
-            // if(state is SignUpPasswordIsNotEntered){
-            //   _signUpBloc.add(SignUpCredentialsPasswordNotEnteredEvent());
-            // }
           },
           builder: (context, state) {
             return Column(

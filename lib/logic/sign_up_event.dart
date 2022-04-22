@@ -8,31 +8,9 @@ abstract class SignUpEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class SignUpCredentialsEnteredEvent extends SignUpEvent {
-  // final String _username;
-  // final String _password;
-  // final String _confirmPassword;
-  //
-  // SignUpCredentialsEnteredEvent(
-  //     this._username, this._password, this._confirmPassword);
-  //
-  // String get username => _username;
-  // String get password => _password;
-  // String get confirmPassword => _confirmPassword;
-}
+class SignUpCredentialsEnteredEvent extends SignUpEvent {}
 
-class SignUpCredentialsNotEnteredEvent extends SignUpEvent {
-  // final String _username;
-  // final String _password;
-  // final String _confirmPassword;
-  //
-  // SignUpCredentialsNotEnteredEvent(
-  //     this._username, this._password, this._confirmPassword);
-  //
-  // String get username => _username;
-  // String get password => _password;
-  // String get confirmPassword => _confirmPassword;
-}
+class SignUpCredentialsNotEnteredEvent extends SignUpEvent {}
 
 class SignUpCredentialsUsernameEnteredEvent extends SignUpEvent {}
 
@@ -72,5 +50,3 @@ class SignUpCredentialsCheckedEnteredConfirmPasswordEvent extends SignUpEvent {
   String get confirmPassword => _confirmPassword;
   String get password => _password;
 }
-
-
