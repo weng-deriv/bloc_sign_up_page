@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:bloc_sign_up_page/logic/sign_up_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,27 +21,58 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   void initState() {
     // TODO: implement initState
-    _signUpBloc = BlocProvider.of<SignUpBloc>(context);
+
+    super.initState();
     _username.addListener(checkControllerEntered);
     _password.addListener(checkControllerEntered);
     _confirmPassword.addListener(checkControllerEntered);
-    // _signUpBloc.addEvents(_username, _password, _confirmPassword);
-    super.initState();
+    _signUpBloc = BlocProvider.of<SignUpBloc>(context);
+  }
+
+  String? getUsernameErrorText(state) {
+    if (state is SignUpUsernameIsNotEntered) {
+      // print(state.toString());
+      return "Please enter your username";
+    }
+    print(state.toString());
+    if (state is SignUpUsernameExceedMinMaxCharacters) {
+      return "Make sure that your username is between 3 to 8\ncharacters !!!";
+    }
+
+    return null;
+  }
+
+  String? getPasswordErrorText(state) {
+    if (state is SignUpPasswordIsNotEntered) {
+      return "Please enter your password";
+    }
+    return null;
   }
 
   void checkControllerEntered() {
     setState(() {
-      if (_username.text.isNotEmpty &&
-          _password.text.isNotEmpty &&
-          _confirmPassword.text.isNotEmpty) {
-        _signUpBloc.add(SignUpCredentialsEnteredEvent());
-        if (_password.text != _confirmPassword.text) {
-          _signUpBloc.add(SignUpPasswordEnteredNotMatched());
-        }
-        _signUpBloc.add(SignUpPasswordEnteredMatched());
-        _isButtonDisabled = false;
-      } else {
-        _signUpBloc.add(SignUpCredentialsNotEnteredEvent());
+      if (_username.text.isEmpty) {
+        _signUpBloc.add(SignUpCredentialsUsernameNotEnteredEvent());
+      }
+
+      if (_username.text.isNotEmpty) {
+        _signUpBloc.add(SignUpCredentialsUsernameEnteredEvent());
+      }
+
+      if (_password.text.isEmpty) {
+        _signUpBloc.add(SignUpCredentialsPasswordNotEnteredEvent());
+      }
+
+      if (_password.text.isNotEmpty) {
+        _signUpBloc.add(SignUpCredentialsPasswordEnteredEvent());
+      }
+
+      if (_confirmPassword.text.isEmpty) {
+        _signUpBloc.add(SignUpCredentialsConfirmPasswordNotEnteredEvent());
+      }
+
+      if (_confirmPassword.text.isNotEmpty) {
+        _signUpBloc.add(SignUpCredentialsConfirmPasswordEnteredEvent());
       }
     });
   }
@@ -63,11 +96,18 @@ class _SignUpPageState extends State<SignUpPage> {
         padding: const EdgeInsets.symmetric(horizontal: 50.0),
         child: BlocConsumer<SignUpBloc, SignUpState>(
           listener: (context, state) {
-            // TODO: implement listener
-            if (state is SignUpCredentialsNotEmpty) {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text("Entered")));
-              print("All entered");
+            if (state is SignUpUsernameIsEntered) {
+              _signUpBloc.add(
+                  SignUpCredentialsCheckEnteredUsernameEvent(_username.text));
+            }
+            if (state is SignUpUsernameIsNotEntered) {
+              _signUpBloc.add(SignUpCredentialsUsernameNotEnteredEvent());
+            }
+            if(state is SignUpPasswordIsEntered){
+              _signUpBloc.add(SignUpCredentialsPasswordEnteredEvent());
+            }
+            if(state is SignUpPasswordIsNotEntered){
+              _signUpBloc.add(SignUpCredentialsPasswordNotEnteredEvent());
             }
           },
           builder: (context, state) {
@@ -75,12 +115,15 @@ class _SignUpPageState extends State<SignUpPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 buildTextField(
-                    _username,
-                    false,
-                    Icon(
-                      IconData(0xe491, fontFamily: 'MaterialIcons'),
-                    ),
-                    'Username'),
+                  _username,
+                  false,
+                  Icon(
+                    IconData(0xe491, fontFamily: 'MaterialIcons'),
+                  ),
+                  'Username',
+                  getUsernameErrorText(state),
+                  'Please enter your username!',
+                ),
                 buildTextField(
                   _password,
                   true,
@@ -88,20 +131,27 @@ class _SignUpPageState extends State<SignUpPage> {
                     IconData(0xe47a, fontFamily: 'MaterialIcons'),
                   ),
                   'Password',
+                  getPasswordErrorText(state),
+                  'Please enter your password.',
                 ),
                 buildTextField(
-                    _confirmPassword,
-                    true,
-                    Icon(
-                      IconData(0xe47a, fontFamily: 'MaterialIcons'),
-                    ),
-                    'Confirm your password'),
+                  _confirmPassword,
+                  true,
+                  Icon(
+                    IconData(0xe47a, fontFamily: 'MaterialIcons'),
+                  ),
+                  'Confirm your password',
+                  // getPasswordErrorText(state)
+                  "Hello",
+                  'Please confirm your password.',
+                ),
+                SizedBox(height: 10),
                 buildTextButton(() {
-                  if (state is SignUpCredentialsNotEmpty) {
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(SnackBar(content: Text("Entered")));
-                    print("Enter");
-                  }
+                  // if (state is SignUpCredentialsNotEmpty) {
+                  //   ScaffoldMessenger.of(context)
+                  //       .showSnackBar(SnackBar(content: Text("Entered")));
+                  //   print("Enter");
+                  // }
                 }),
               ],
             );
@@ -119,7 +169,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   TextField buildTextField(TextEditingController controller, bool obscureText,
-      Icon icon, String labelText) {
+      Icon icon, String labelText, String? errorText, String hintText) {
     return TextField(
       controller: controller,
       obscureText: obscureText,
@@ -127,6 +177,8 @@ class _SignUpPageState extends State<SignUpPage> {
         icon: icon,
         border: UnderlineInputBorder(),
         labelText: labelText,
+        errorText: errorText,
+        hintText: hintText,
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
 
@@ -7,47 +8,89 @@ part 'sign_up_state.dart';
 
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   SignUpBloc() : super(SignUpInitial()) {
-    on<SignUpCredentialsEnteredEvent>(_signUpCredentialsEntered);
-    on<SignUpCredentialsNotEnteredEvent>(_signUpCredentialsNotEntered);
-    on<SignUpPasswordEnteredNotMatched>(_signUpPasswordEnteredNotMatched);
-    on<SignUpPasswordEnteredMatched>(_signUpPasswordEnteredMatched);
+    // on<SignUpCredentialsEnteredEvent>(_signUpCredentialsEntered);
+    // on<SignUpCredentialsNotEnteredEvent>(_signUpCredentialsNotEntered);
+    on<SignUpCredentialsUsernameNotEnteredEvent>(
+        _signUpCredentialsUsernameNotEntered);
+    on<SignUpCredentialsPasswordNotEnteredEvent>(
+        _signUpCredentialsPasswordNotEntered);
+    on<SignUpCredentialsConfirmPasswordNotEnteredEvent>(
+        _signUpCredentialConfirmPasswordNotEntered);
+    on<SignUpCredentialsUsernameEnteredEvent>(
+        _signUpCredentialsUsernameEntered);
+    on<SignUpCredentialsPasswordEnteredEvent>(
+        _signUpCredentialsPasswordEntered);
+    on<SignUpCredentialsConfirmPasswordEnteredEvent>(
+        _signUpCredentialsConfirmPasswordEntered);
+    on<SignUpPasswordEnteredNotMatchedEvent>(_signUpPasswordEnteredNotMatched);
+    on<SignUpPasswordEnteredMatchedEvent>(_signUpPasswordEnteredMatched);
+    on<SignUpCredentialsCheckEnteredUsernameEvent>(
+        _signUpCredentialsCheckEnteredUsername);
   }
 
-  // void addEvents(TextEditingController username, TextEditingController password,
-  //     TextEditingController confirmPassword) {
-  //   if (username.text.isNotEmpty &&
-  //       password.text.isNotEmpty &&
-  //       confirmPassword.text.isNotEmpty) {
-  //     // add(SignUpCredentialsEntered(
-  //     //     username.text, password.text, confirmPassword.text));
-  //     add(SignUpCredentialsEnteredEvent());
-  //
-  //     if (password != confirmPassword) {
-  //       add(SignUpPasswordEnteredNotMatched());
-  //     } else {
-  //       add(SignUpPasswordEnteredMatched());
-  //     }
-  //   } else {
-  //     add(SignUpCredentialsNotEnteredEvent());
-  //   }
-  // }
-
-  void _signUpCredentialsEntered(SignUpEvent event, Emitter<SignUpState> emit) {
+  void _signUpCredentialsEntered(
+      SignUpCredentialsEnteredEvent event, Emitter<SignUpState> emit) {
     emit(SignUpCredentialsNotEmpty());
   }
 
-  void _signUpCredentialsNotEntered(
-      SignUpEvent event, Emitter<SignUpState> emit) {
-    emit(SignUpCredentialsEmpty());
+  void _signUpCredentialsCheckEnteredUsername(
+      SignUpCredentialsCheckEnteredUsernameEvent event,
+      Emitter<SignUpState> emit) {
+    // // if(event.username.lengt{
+    // //   print('derivvvvvvvv');
+    // // }
+    // // print(event.username.length);
+    // if (event.username.isEmpty) {
+    //   emit(SignUpCredentialsUsernameEmpty());
+    // }
+    if (event.username.length <= 2 || event.username.length > 8) {
+      emit(SignUpUsernameExceedMinMaxCharacters());
+    } else {
+      emit(SignUpUsernameValid());
+    }
+  }
+
+  void _signUpCredentialsUsernameEntered(
+      SignUpCredentialsUsernameEnteredEvent event, Emitter<SignUpState> emit) {
+    emit(SignUpUsernameIsEntered());
+  }
+
+  void _signUpCredentialsPasswordEntered(
+      SignUpCredentialsPasswordEnteredEvent event, Emitter<SignUpState> emit) {
+    emit(SignUpPasswordIsEntered());
+  }
+
+  void _signUpCredentialsConfirmPasswordEntered(
+      SignUpCredentialsConfirmPasswordEnteredEvent event,
+      Emitter<SignUpState> emit) {
+    emit(SignUpConfirmPasswordIsEntered());
+  }
+
+  void _signUpCredentialsUsernameNotEntered(
+      SignUpCredentialsUsernameNotEnteredEvent event,
+      Emitter<SignUpState> emit) {
+    emit(SignUpUsernameIsNotEntered());
+  }
+
+  void _signUpCredentialsPasswordNotEntered(
+      SignUpCredentialsPasswordNotEnteredEvent event,
+      Emitter<SignUpState> emit) {
+    emit(SignUpPasswordIsNotEntered());
+  }
+
+  void _signUpCredentialConfirmPasswordNotEntered(
+      SignUpCredentialsConfirmPasswordNotEnteredEvent event,
+      Emitter<SignUpState> emit) {
+    emit(SignUpConfirmPasswordIsNotEntered());
   }
 
   void _signUpPasswordEnteredNotMatched(
-      SignUpEvent event, Emitter<SignUpState> emit) {
+      SignUpPasswordEnteredNotMatchedEvent event, Emitter<SignUpState> emit) {
     emit(SignUpPasswordNotMatched());
   }
 
   void _signUpPasswordEnteredMatched(
-      SignUpEvent event, Emitter<SignUpState> emit) {
+      SignUpPasswordEnteredMatchedEvent event, Emitter<SignUpState> emit) {
     emit(SignUpPasswordMatched());
   }
 }
