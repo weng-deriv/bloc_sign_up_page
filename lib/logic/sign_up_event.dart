@@ -54,7 +54,23 @@ class SignUpCredentialsCheckEnteredUsernameEvent extends SignUpEvent {
   String get username => _username;
 }
 
-class SignUpPasswordEnteredNotMatchedEvent extends SignUpEvent {}
+class SignUpCredentialsCheckedEnteredPasswordEvent extends SignUpEvent {
+  final String _password;
 
-class SignUpPasswordEnteredMatchedEvent extends SignUpEvent {}
+  SignUpCredentialsCheckedEnteredPasswordEvent(this._password);
+
+  String get password => _password;
+}
+
+class SignUpCredentialsCheckedEnteredConfirmPasswordEvent extends SignUpEvent {
+  final String _confirmPassword;
+  final String _password;
+
+  SignUpCredentialsCheckedEnteredConfirmPasswordEvent(
+      this._confirmPassword, this._password);
+
+  String get confirmPassword => _confirmPassword;
+  String get password => _password;
+}
+
 

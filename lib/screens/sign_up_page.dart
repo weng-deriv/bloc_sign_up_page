@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:bloc_sign_up_page/logic/sign_up_bloc.dart';
+import 'package:bloc_sign_up_page/screens/second_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -29,8 +30,21 @@ class _SignUpPageState extends State<SignUpPage> {
     _signUpBloc = BlocProvider.of<SignUpBloc>(context);
   }
 
+  void onPress(state, context) {
+    if (state is SignUpUsernameValid &&
+        state is SignUpPasswordValid &&
+        state is SignUpPasswordsMatched) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const SecondPage()));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text('Something is not right!!!'),
+      ));
+    }
+  }
+
   String? getUsernameErrorText(state) {
-    if (state is SignUpUsernameIsNotEntered) {
+    if (_username.text.isEmpty) {
       // print(state.toString());
       return "Please enter your username";
     }
@@ -38,13 +52,32 @@ class _SignUpPageState extends State<SignUpPage> {
     if (state is SignUpUsernameExceedMinMaxCharacters) {
       return "Make sure that your username is between 3 to 8\ncharacters !!!";
     }
+    if (state is SignUpUsernameContainsSpecialCharacters) {
+      return "Make sure no special characters in your \nusername";
+    }
 
     return null;
   }
 
   String? getPasswordErrorText(state) {
-    if (state is SignUpPasswordIsNotEntered) {
+    if (_password.text.isEmpty) {
       return "Please enter your password";
+    }
+    if (state is SignUpPasswordExceedMinMaxCharacters) {
+      return "Make sure that your password is between 8 \nto 24 characters";
+    }
+    if (state is SignUpPasswordAtLeastContainsOneSpecialCharacters) {
+      return "Make sure to have at least one uppercase \ncharacter, one lower case character, one \ndigit, one special characters and 8 characters in length!!!";
+    }
+    return null;
+  }
+
+  String? getConfirmPasswordErrorText(state) {
+    if (_confirmPassword.text.isEmpty) {
+      return "Please confirm your password!!!";
+    }
+    if (state is SignUpPasswordsNotMatched) {
+      return "Please make sure you've matched the \npassword you filled in";
     }
     return null;
   }
@@ -53,25 +86,19 @@ class _SignUpPageState extends State<SignUpPage> {
     setState(() {
       if (_username.text.isEmpty) {
         _signUpBloc.add(SignUpCredentialsUsernameNotEnteredEvent());
-      }
-
-      if (_username.text.isNotEmpty) {
+      } else if (_username.text.isNotEmpty) {
         _signUpBloc.add(SignUpCredentialsUsernameEnteredEvent());
       }
 
       if (_password.text.isEmpty) {
         _signUpBloc.add(SignUpCredentialsPasswordNotEnteredEvent());
-      }
-
-      if (_password.text.isNotEmpty) {
+      } else if (_password.text.isNotEmpty) {
         _signUpBloc.add(SignUpCredentialsPasswordEnteredEvent());
       }
 
       if (_confirmPassword.text.isEmpty) {
         _signUpBloc.add(SignUpCredentialsConfirmPasswordNotEnteredEvent());
-      }
-
-      if (_confirmPassword.text.isNotEmpty) {
+      } else if (_confirmPassword.text.isNotEmpty) {
         _signUpBloc.add(SignUpCredentialsConfirmPasswordEnteredEvent());
       }
     });
@@ -100,15 +127,22 @@ class _SignUpPageState extends State<SignUpPage> {
               _signUpBloc.add(
                   SignUpCredentialsCheckEnteredUsernameEvent(_username.text));
             }
-            if (state is SignUpUsernameIsNotEntered) {
-              _signUpBloc.add(SignUpCredentialsUsernameNotEnteredEvent());
+            // if (state is SignUpUsernameIsNotEntered) {
+            //   _signUpBloc.add(SignUpCredentialsUsernameNotEnteredEvent());
+            // }
+            if (state is SignUpPasswordIsEntered) {
+              _signUpBloc.add(
+                  SignUpCredentialsCheckedEnteredPasswordEvent(_password.text));
             }
-            if(state is SignUpPasswordIsEntered){
-              _signUpBloc.add(SignUpCredentialsPasswordEnteredEvent());
+
+            if (state is SignUpConfirmPasswordIsEntered) {
+              _signUpBloc.add(
+                  SignUpCredentialsCheckedEnteredConfirmPasswordEvent(
+                      _confirmPassword.text, _password.text));
             }
-            if(state is SignUpPasswordIsNotEntered){
-              _signUpBloc.add(SignUpCredentialsPasswordNotEnteredEvent());
-            }
+            // if(state is SignUpPasswordIsNotEntered){
+            //   _signUpBloc.add(SignUpCredentialsPasswordNotEnteredEvent());
+            // }
           },
           builder: (context, state) {
             return Column(
@@ -142,16 +176,12 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   'Confirm your password',
                   // getPasswordErrorText(state)
-                  "Hello",
+                  getConfirmPasswordErrorText(state),
                   'Please confirm your password.',
                 ),
                 SizedBox(height: 10),
                 buildTextButton(() {
-                  // if (state is SignUpCredentialsNotEmpty) {
-                  //   ScaffoldMessenger.of(context)
-                  //       .showSnackBar(SnackBar(content: Text("Entered")));
-                  //   print("Enter");
-                  // }
+                  onPress(state, context);
                 }),
               ],
             );

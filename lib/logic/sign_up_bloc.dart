@@ -22,11 +22,17 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
         _signUpCredentialsPasswordEntered);
     on<SignUpCredentialsConfirmPasswordEnteredEvent>(
         _signUpCredentialsConfirmPasswordEntered);
-    on<SignUpPasswordEnteredNotMatchedEvent>(_signUpPasswordEnteredNotMatched);
-    on<SignUpPasswordEnteredMatchedEvent>(_signUpPasswordEnteredMatched);
     on<SignUpCredentialsCheckEnteredUsernameEvent>(
         _signUpCredentialsCheckEnteredUsername);
+    on<SignUpCredentialsCheckedEnteredPasswordEvent>(
+        _signUpCredentialsCheckEnteredPassword);
+    on<SignUpCredentialsCheckedEnteredConfirmPasswordEvent>(
+        _signUpCredentialsCheckedEnteredConfirmPassword);
   }
+
+  static RegExp regExp = RegExp("[^A-Za-z0-9]");
+  static RegExp passwordRegExp =
+      RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
 
   void _signUpCredentialsEntered(
       SignUpCredentialsEnteredEvent event, Emitter<SignUpState> emit) {
@@ -45,8 +51,30 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     // }
     if (event.username.length <= 2 || event.username.length > 8) {
       emit(SignUpUsernameExceedMinMaxCharacters());
+    } else if (regExp.hasMatch(event.username)) {
+      emit(SignUpUsernameContainsSpecialCharacters());
     } else {
       emit(SignUpUsernameValid());
+    }
+  }
+
+  void _signUpCredentialsCheckEnteredPassword(
+      SignUpCredentialsCheckedEnteredPasswordEvent event,
+      Emitter<SignUpState> emit) {
+    if (!passwordRegExp.hasMatch(event.password)) {
+      emit(SignUpPasswordAtLeastContainsOneSpecialCharacters());
+    } else {
+      emit(SignUpPasswordValid());
+    }
+  }
+
+  void _signUpCredentialsCheckedEnteredConfirmPassword(
+      SignUpCredentialsCheckedEnteredConfirmPasswordEvent event,
+      Emitter<SignUpState> emit) {
+    if (event.confirmPassword != event.password) {
+      emit(SignUpPasswordsNotMatched());
+    } else {
+      emit(SignUpPasswordsMatched());
     }
   }
 
@@ -82,15 +110,5 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       SignUpCredentialsConfirmPasswordNotEnteredEvent event,
       Emitter<SignUpState> emit) {
     emit(SignUpConfirmPasswordIsNotEntered());
-  }
-
-  void _signUpPasswordEnteredNotMatched(
-      SignUpPasswordEnteredNotMatchedEvent event, Emitter<SignUpState> emit) {
-    emit(SignUpPasswordNotMatched());
-  }
-
-  void _signUpPasswordEnteredMatched(
-      SignUpPasswordEnteredMatchedEvent event, Emitter<SignUpState> emit) {
-    emit(SignUpPasswordMatched());
   }
 }
