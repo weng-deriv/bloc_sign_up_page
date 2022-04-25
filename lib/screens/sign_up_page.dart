@@ -44,9 +44,7 @@ class _SignUpPageState extends State<SignUpPage> {
       _confirmPasswordValid = true;
     }
 
-    if (_usernameValid == true &&
-        _passwordValid == true &&
-        _confirmPasswordValid == true) {
+    if (_usernameValid && _passwordValid && _confirmPasswordValid) {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const SecondPage()));
     } else {
