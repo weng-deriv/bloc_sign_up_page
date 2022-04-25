@@ -10,6 +10,13 @@ class SecondPage extends StatefulWidget {
 class _SecondPageState extends State<SecondPage> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(
+        title: Center(child: Text("You've signed up successfully!!!")),
+      ),
+      body: Center(
+        child: Text('congratz'),
+      ),
+    );
   }
 }

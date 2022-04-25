@@ -16,12 +16,14 @@ class _SignUpPageState extends State<SignUpPage> {
   final _username = TextEditingController();
   final _password = TextEditingController();
   final _confirmPassword = TextEditingController();
+  late final bool _usernameValid;
+  late final bool _passwordValid;
+  late final bool _confirmPasswordValid;
   late final SignUpBloc _signUpBloc;
 
   @override
   void initState() {
     // TODO: implement initState
-
     super.initState();
     _username.addListener(checkControllerEntered);
     _password.addListener(checkControllerEntered);
@@ -30,9 +32,21 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void onPress(state, context) {
-    if (state is SignUpUsernameValid &&
-        state is SignUpPasswordValid &&
-        state is SignUpPasswordsMatched) {
+    if (state is SignUpUsernameValid) {
+      _usernameValid = true;
+    }
+
+    if (state is SignUpPasswordValid) {
+      _passwordValid = true;
+    }
+
+    if (state is SignUpPasswordsMatched) {
+      _confirmPasswordValid = true;
+    }
+
+    if (_usernameValid == true &&
+        _passwordValid == true &&
+        _confirmPasswordValid == true) {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const SecondPage()));
     } else {
